@@ -1,8 +1,10 @@
 name: test
 
 on:
-  - push
-  - pull_request
+  project:
+    type: deleted
+  # - push
+  # - pull_request
 
 jobs:
   test:

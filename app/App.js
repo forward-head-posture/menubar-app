@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import { Container } from "react-bootstrap"
 import { ipcRenderer } from "electron"
 import ForwardHeadPosture from "react-forward-head-posture"
@@ -10,18 +10,22 @@ const q = []
 export default function() {
   const [under, setUnder] = useState(store.get("under", 0))
   const [averageScore, setAverageScore] = useState(0)
-  const onEstimate = useCallback(
-    score => {
-      if (q.length > 9) {
-        q.shift()
-      }
-      q.push(score)
-      const average = q.reduce((prev, curr) => prev + curr, 0) / q.length
-      ipcRenderer.send("notification", { average, under })
-      setAverageScore(average)
-    },
-    [under]
-  )
+  const onEstimate = useCallback(score => {
+    if (q.length > 9) {
+      q.shift()
+    }
+    q.push(score)
+    const average = q.reduce((prev, curr) => prev + curr, 0) / q.length
+    setAverageScore(average)
+    ipcRenderer.send("average", average)
+  }, [])
+
+  useEffect(() => {
+    if (averageScore < under) {
+      // eslint-disable-next-line no-new
+      new Notification(`score: ${averageScore}`)
+    }
+  }, [averageScore, under])
 
   return (
     <Container>

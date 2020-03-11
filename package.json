@@ -20,7 +20,7 @@
   },
   "build": {
     "productName": "forward-head-posture",
-    "appId": "yoyota.forward-head-posture",
+    "appId": "com.yoyota.forward-head-posture",
     "files": [
       "dist/",
       "node_modules/",
@@ -30,8 +30,7 @@
       "package.json"
     ],
     "dmg": {
-      "contents": [
-        {
+      "contents": [{
           "x": 130,
           "y": 220
         },
@@ -52,8 +51,7 @@
     "linux": {
       "target": [
         "deb",
-        "rpm",
-        "AppImage"
+        "rpm"
       ],
       "category": "Development"
     },
