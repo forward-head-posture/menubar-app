@@ -6,13 +6,12 @@ const { NODE_ENV } = process.env
 let tray
 let notification
 
-ipcMain.on("score", async (_, score) => {
-  tray.setTitle(Math.round(score).toString())
-})
-
-ipcMain.on("alert", async (_, score) => {
-  notification.body = `score: ${score}`
-  notification.show()
+ipcMain.on("notification", async (_, { average, under }) => {
+  tray.setTitle(Math.round(average).toString())
+  if (average < under) {
+    notification.body = `score: ${average}`
+    notification.show()
+  }
 })
 
 module.exports = function createMenubar() {

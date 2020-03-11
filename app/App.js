@@ -6,25 +6,19 @@ import Store from "electron-store"
 
 const store = new Store()
 const q = []
-function onEstimate(under, score) {
-  if (q.length > 9) {
-    q.shift()
-  }
-  q.push(score)
-  const averageScore = q.reduce((prev, curr) => prev + curr, 0) / q.length
-  ipcRenderer.send("score", averageScore)
-  if (averageScore < under) {
-    ipcRenderer.send("alert", averageScore)
-  }
-}
 
 export default function() {
   const [under, setUnder] = useState(store.get("under", 0))
-  const [score, setScore] = useState(0)
-  const onEstimateCallback = useCallback(
-    scoresArray => {
-      onEstimate(under, scoresArray[0][0])
-      setScore(scoresArray[0][0])
+  const [averageScore, setAverageScore] = useState(0)
+  const onEstimate = useCallback(
+    score => {
+      if (q.length > 9) {
+        q.shift()
+      }
+      q.push(score)
+      const average = q.reduce((prev, curr) => prev + curr, 0) / q.length
+      ipcRenderer.send("notification", { average, under })
+      setAverageScore(average)
     },
     [under]
   )
@@ -42,9 +36,9 @@ export default function() {
           }}
         />
       </div>
-      <h5>score: {score}</h5>
+      <h5>score: {averageScore}</h5>
       <div style={{ height: "80%", width: "100%" }}>
-        <ForwardHeadPosture onEstimate={onEstimateCallback} frameRate={5} />
+        <ForwardHeadPosture onEstimate={onEstimate} frameRate={5} />
       </div>
     </Container>
   )
