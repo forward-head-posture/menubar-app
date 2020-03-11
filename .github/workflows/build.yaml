@@ -1,0 +1,13 @@
+on: push
+
+name: Upload Release Asset
+
+jobs:
+  build:
+    name: Upload Release Asset
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-18.04]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - ls

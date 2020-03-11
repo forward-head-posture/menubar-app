@@ -1,9 +1,13 @@
 /* eslint global-require: off */
-
 const log = require("electron-log")
-const { app, BrowserWindow } = require("electron")
+const { app } = require("electron")
 const { autoUpdater } = require("electron-updater")
 const createMenubar = require("./createMenubar")
+const packageJSON = require("../package")
+
+if (process.platform === "win32") {
+  app.setAppUserModelId(packageJSON.build.appId)
+}
 
 class AppUpdater {
   constructor() {
@@ -32,48 +36,20 @@ const installExtensions = async () => {
 
   return Promise.all(
     extensions.map(name => installer.default(installer[name], forceDownload))
+    // eslint-disable-next-line no-console
   ).catch(console.log)
-}
-
-function createDevWindow() {
-  const devWindow = new BrowserWindow({
-    show: false,
-    width: 1024,
-    height: 728,
-    webPreferences: {
-      nodeIntegration: true
-    }
-  })
-
-  devWindow.loadURL(`file://${__dirname}/app.html`)
-  devWindow.webContents.on("did-finish-load", () => {
-    devWindow.show()
-    devWindow.focus()
-  })
 }
 
 async function createWindow() {
   if (development || DEBUG_PROD === "true") {
     await installExtensions()
   }
-
-  if (development) {
-    createDevWindow()
-  }
-
   createMenubar()
-
   // eslint-disable-next-line no-new
   new AppUpdater()
 }
 
-/**
- * Add event listeners...
- */
-
 app.on("window-all-closed", () => {
-  // Respect the OSX convention of having the application in memory even
-  // after all windows have been closed
   if (process.platform !== "darwin") {
     app.quit()
   }
